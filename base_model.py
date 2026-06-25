@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
-import torch
-from torch.utils.data import DataLoader, Dataset
-from PIL import Image
 from pathlib import Path
 
+import torch
+from PIL import Image
+from torch.utils.data import Dataset
+
 from labels import (
-    HF_INDEX_TO_NAME,
     HF_INDEX_TO_IDX,
+    HF_INDEX_TO_NAME,
     TARGET_HF_INDICES,
 )
 

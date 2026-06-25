@@ -27,8 +27,16 @@ LEARNING_RATE = 1e-3
 WEIGHT_DECAY = 1e-4
 MIN_LEARNING_RATE = 1e-5
 LABEL_SMOOTHING = 0.05
+NUM_WORKERS = 2
 ACCELERATOR_DEVICE_TYPES = {"cuda", "xpu"}
 PROGRESS_BAR_WIDTH = 30
+
+
+def resolve_project_path(path: str) -> Path:
+    config_path = Path(path)
+    if config_path.is_absolute():
+        return config_path
+    return PROJECT_ROOT / config_path
 
 
 def load_ipex():
@@ -149,7 +157,7 @@ def main():
     This script must create weights.joblib.
     """
     global OUTPUT, IMAGE_SIZE, BATCH_SIZE, EPOCHS, LEARNING_RATE
-    global WEIGHT_DECAY, MIN_LEARNING_RATE, LABEL_SMOOTHING
+    global WEIGHT_DECAY, MIN_LEARNING_RATE, LABEL_SMOOTHING, NUM_WORKERS
 
     data_dir = None
     model_architecture_class = ModelArchitecture
@@ -158,24 +166,26 @@ def main():
     if config_path.exists():
         with open(config_path, "r", encoding="utf-8") as f:
             config = json.load(f)
-        
+
         if "train_data_path" in config:
-            data_dir = config["train_data_path"]
+            data_dir = resolve_project_path(config["train_data_path"])
         if "output_weights_path" in config:
-            OUTPUT = Path(config["output_weights_path"])
+            OUTPUT = resolve_project_path(config["output_weights_path"])
         if "model_architecture_path" in config:
-            model_path = config["model_architecture_path"]
+            model_path = resolve_project_path(config["model_architecture_path"])
             spec = importlib.util.spec_from_file_location("custom_model", model_path)
             custom_model_module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(custom_model_module)
             model_architecture_class = custom_model_module.ModelArchitecture
-            
+
         if "batch_size" in config:
             BATCH_SIZE = config["batch_size"]
         if "epochs" in config:
             EPOCHS = config["epochs"]
         if "learning_rate" in config:
             LEARNING_RATE = config["learning_rate"]
+        if "num_workers" in config:
+            NUM_WORKERS = config["num_workers"]
 
     device, ipex = get_training_device()
     print(f"Using device: {device}")
@@ -194,7 +204,7 @@ def main():
         "batch_size": BATCH_SIZE,
         "val_split": 0.2,
         "test_split": 0.0,
-        "num_workers": 0,
+        "num_workers": NUM_WORKERS,
         "seed": 42,
     }
     if data_dir is not None:
