@@ -10,6 +10,8 @@ from torch.utils.data import Dataset
 DATA_DIR = "train_set/train"
 LABELS_JSON = "labels.json"
 
+
+
 # --- Helper Classes inside your pipeline file ---
 
 class JSONMappedImageFolder(ImageFolder):
@@ -59,11 +61,12 @@ class SubsetWrapper(Dataset):
 class ImageClassificationDataModule:
     def __init__(
         self,
-        data_dir: str,
-        class_mapping_json: str,
+        data_dir: str = DATA_DIR
+        class_mapping_json: str = LABELS_JSON,
         image_size: Tuple[int, int] = (224, 224),
         batch_size: int = 32,
         val_split: float = 0.2,
+        test_split: float = 0.0,
         num_workers: int = 4,
         seed: int = 42
     ):
@@ -72,8 +75,12 @@ class ImageClassificationDataModule:
         self.image_size = image_size
         self.batch_size = batch_size
         self.val_split = val_split
+        self.test_split = test_split
         self.num_workers = num_workers
         self.seed = seed
+        
+        if not (0 <= self.test_split < 1 and 0 <= self.val_split < 1):
+            raise ValueError("test_split and val_split must be between 0 and 1")
         
         # Load the class names from JSON
         with open(class_mapping_json, 'r', encoding='utf-8') as f:
@@ -82,17 +89,35 @@ class ImageClassificationDataModule:
         # Internal placeholders for the raw PyTorch subsets
         self._raw_train_subset = None
         self._raw_val_subset = None
+        self._raw_test_subset = None
+
+        self._train_transforms = self._get_base_transforms()
         
-        # Split the data into train/val raw structures
+        # Split the data into train/val(/test) raw structures
         self._prepare_datasets()
 
-    def _get_transforms(self, augment: bool) -> transforms.Compose:
+    def _get_base_transforms(self) -> transforms.Compose:
         """Centralized place for all image manipulations."""
-        base_transforms = [
+        return transforms.Compose([
+            transforms.Resize(self.image_size),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        ])
+
+    def set_transforms(self, list_of_transforms):
+        transforms_to_compose = [
             transforms.Resize(self.image_size),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ]
+
+        transforms_to_compose.extend(list_of_transforms)
+
+        self._train_transforms = transforms.Compose(transforms_to_compose)
+
+    def _get_transforms(self, augment: bool) -> transforms.Compose:
+        """Centralized place for all image manipulations."""
+        base_transforms = self._get_base_transforms()
         
         if augment:
             # Heavy manipulations for training
@@ -105,7 +130,7 @@ class ImageClassificationDataModule:
         return transforms.Compose(base_transforms)
 
     def _prepare_datasets(self):
-        """Initializes the dataset and performs the train/val split."""
+        """Initializes the dataset and performs the train/val(/test) split."""
         # We pass transform=None because SubsetWrapper will handle it lazily
         full_dataset = JSONMappedImageFolder(
             root=self.data_dir,
@@ -113,14 +138,19 @@ class ImageClassificationDataModule:
             transform=None
         )
         
-        # Calculate split sizes
-        val_size = int(len(full_dataset) * self.val_split)
-        train_size = len(full_dataset) - val_size
-        
-        # Reproducible split using generator seed
         generator = torch.Generator().manual_seed(self.seed)
-        self._raw_train_subset, self._raw_val_subset = random_split(
-            full_dataset, [train_size, val_size], generator=generator
+        
+        test_size = int(len(full_dataset) * self.test_split)
+        val_size = int((len(full_dataset) - test_size) * self.val_split)
+        train_size = len(full_dataset) - val_size - test_size
+        
+        # First split: train and (val+test)
+        self._raw_train_subset, remaining = random_split(
+            full_dataset, [train_size, val_size + test_size], generator=generator
+        )
+        # Second split: val and test
+        self._raw_val_subset, self._raw_test_subset = random_split(
+            remaining, [val_size, test_size], generator=torch.Generator().manual_seed(self.seed)
         )
 
     @property
@@ -157,9 +187,28 @@ class ImageClassificationDataModule:
             num_workers=self.num_workers,
             pin_memory=torch.cuda.is_available()
         )
+
+    def get_test_loader(self) -> DataLoader:
+        """Returns a DataLoader for testing (No augmentation, no shuffle).
+        
+        Only available when test_split > 0. Raises ValueError otherwise.
+        """
+        if self._raw_test_subset is None:
+            raise ValueError("Test set not available. Initialize with test_split > 0 to enable test set.")
+        
+        test_transform = self._get_transforms(augment=False)
+        test_dataset = SubsetWrapper(self._raw_test_subset, transform=test_transform)
+        
+        return DataLoader(
+            test_dataset,
+            batch_size=self.batch_size,
+            shuffle=False, # Do not shuffle test data
+            num_workers=self.num_workers,
+            pin_memory=torch.cuda.is_available()
+        )
     
 if __name__ == "__main__":
-    # Example usage
+    # Example usage with 2-way split (default)
     data_module = ImageClassificationDataModule(
         data_dir= DATA_DIR,
         class_mapping_json=LABELS_JSON,
@@ -177,3 +226,24 @@ if __name__ == "__main__":
     print(f"Class names: {data_module.get_class_names()}")
     print(f"Number of training batches: {len(train_loader)}")
     print(f"Number of validation batches: {len(val_loader)}")
+    
+    # Example usage with 3-way split (train/val/test)
+    print("\n--- 3-way split example ---")
+    data_module_3way = ImageClassificationDataModule(
+        data_dir= DATA_DIR,
+        class_mapping_json=LABELS_JSON,
+        image_size=(224, 224),
+        batch_size=32,
+        val_split=0.2,
+        test_split=0.0,
+        num_workers=4,
+        seed=42
+    )
+    
+    train_loader_3way = data_module_3way.get_train_loader(augment=True)
+    val_loader_3way = data_module_3way.get_evaluation_loader()
+    test_loader_3way = data_module_3way.get_test_loader()
+    
+    print(f"Number of training batches: {len(train_loader_3way)}")
+    print(f"Number of validation batches: {len(val_loader_3way)}")
+    print(f"Number of test batches: {len(test_loader_3way)}")
