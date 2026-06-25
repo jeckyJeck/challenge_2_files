@@ -1,1 +1,3 @@
 .venv/
+dataset/train_set/
+dataset/augmentations/
