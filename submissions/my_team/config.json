@@ -1,0 +1,8 @@
+{
+    "train_data_path": "dataset/train_set",
+    "output_weights_path": "submissions/my_team/weights.joblib",
+    "model_architecture_path": "submissions/my_team/model.py",
+    "batch_size": 64,
+    "epochs": 10,
+    "learning_rate": 0.0001
+}

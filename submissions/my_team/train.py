@@ -1,4 +1,6 @@
+import importlib.util
 from importlib import import_module
+import json
 from pathlib import Path
 import sys
 
@@ -146,6 +148,35 @@ def main():
 
     This script must create weights.joblib.
     """
+    global OUTPUT, IMAGE_SIZE, BATCH_SIZE, EPOCHS, LEARNING_RATE
+    global WEIGHT_DECAY, MIN_LEARNING_RATE, LABEL_SMOOTHING
+
+    data_dir = None
+    model_architecture_class = ModelArchitecture
+
+    config_path = Path(__file__).resolve().parent / "config.json"
+    if config_path.exists():
+        with open(config_path, "r", encoding="utf-8") as f:
+            config = json.load(f)
+        
+        if "train_data_path" in config:
+            data_dir = config["train_data_path"]
+        if "output_weights_path" in config:
+            OUTPUT = Path(config["output_weights_path"])
+        if "model_architecture_path" in config:
+            model_path = config["model_architecture_path"]
+            spec = importlib.util.spec_from_file_location("custom_model", model_path)
+            custom_model_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(custom_model_module)
+            model_architecture_class = custom_model_module.ModelArchitecture
+            
+        if "batch_size" in config:
+            BATCH_SIZE = config["batch_size"]
+        if "epochs" in config:
+            EPOCHS = config["epochs"]
+        if "learning_rate" in config:
+            LEARNING_RATE = config["learning_rate"]
+
     device, ipex = get_training_device()
     print(f"Using device: {device}")
     if device.type == "xpu":
@@ -158,19 +189,23 @@ def main():
     elif ipex is None:
         print("IPEX is not installed; falling back to the best native PyTorch device.")
 
-    data_module = ImageClassificationDataModule(
-        image_size=IMAGE_SIZE,
-        batch_size=BATCH_SIZE,
-        val_split=0.2,
-        test_split=0.0,
-        num_workers=0,
-        seed=42,
-    )
+    data_module_kwargs = {
+        "image_size": IMAGE_SIZE,
+        "batch_size": BATCH_SIZE,
+        "val_split": 0.2,
+        "test_split": 0.0,
+        "num_workers": 0,
+        "seed": 42,
+    }
+    if data_dir is not None:
+        data_module_kwargs["data_dir"] = data_dir
+
+    data_module = ImageClassificationDataModule(**data_module_kwargs)
 
     train_loader = data_module.get_train_loader(augment=True)
     val_loader = data_module.get_val_loader()
 
-    model = ModelArchitecture(num_classes=data_module.num_classes).to(
+    model = model_architecture_class(num_classes=data_module.num_classes).to(
         device=device,
         memory_format=torch.channels_last,
     )
