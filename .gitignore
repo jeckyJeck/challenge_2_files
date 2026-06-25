@@ -1,3 +1,15 @@
 .venv/
-dataset/train_set/
-dataset/augmentations/
+# dataset/train_set/
+# dataset/augmentations/
+*.jpg
+*pyc
+*.jpeg
+*.JPEG
+*.jpg.xz
+*.png.xz
+*.jpeg.xz
+*.JPEG.xz
+*.jpg.xz.part
+*.png.xz.part
+*.jpeg.xz.part
+*.JPEG.xz.part
