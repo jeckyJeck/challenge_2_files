@@ -61,7 +61,7 @@ class SubsetWrapper(Dataset):
 class ImageClassificationDataModule:
     def __init__(
         self,
-        data_dir: str = DATA_DIR
+        data_dir: str = DATA_DIR,
         class_mapping_json: str = LABELS_JSON,
         image_size: Tuple[int, int] = (224, 224),
         batch_size: int = 32,
@@ -164,7 +164,7 @@ class ImageClassificationDataModule:
 
     def get_train_loader(self, augment: bool = True) -> DataLoader:
         """Returns a DataLoader for training with optional augmentation."""
-        train_transform = self._get_transforms(augment=augment)
+        train_transform = self._train_transforms
         train_dataset = SubsetWrapper(self._raw_train_subset, transform=train_transform)
         
         return DataLoader(
