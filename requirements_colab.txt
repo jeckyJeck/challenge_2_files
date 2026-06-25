@@ -1,0 +1,7 @@
+# Google Colab already provides a compatible CUDA-enabled PyTorch stack.
+# These packages are the portable dependencies needed by this project.
+torch
+torchvision
+joblib
+pillow
+numpy
