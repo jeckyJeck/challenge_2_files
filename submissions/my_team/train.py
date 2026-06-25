@@ -6,6 +6,7 @@ import joblib
 import torch
 import torch.nn as nn
 from torch.optim import AdamW
+from torch.optim.lr_scheduler import CosineAnnealingLR
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -22,6 +23,8 @@ BATCH_SIZE = 64
 EPOCHS = 25
 LEARNING_RATE = 1e-3
 WEIGHT_DECAY = 1e-4
+MIN_LEARNING_RATE = 1e-5
+LABEL_SMOOTHING = 0.05
 ACCELERATOR_DEVICE_TYPES = {"cuda", "xpu"}
 PROGRESS_BAR_WIDTH = 30
 
@@ -171,17 +174,27 @@ def main():
         device=device,
         memory_format=torch.channels_last,
     )
-    criterion = nn.CrossEntropyLoss().to(device)
+    criterion = nn.CrossEntropyLoss(label_smoothing=LABEL_SMOOTHING).to(device)
     optimizer = AdamW(
         model.parameters(),
         lr=LEARNING_RATE,
         weight_decay=WEIGHT_DECAY,
+    )
+    scheduler = CosineAnnealingLR(
+        optimizer,
+        T_max=EPOCHS,
+        eta_min=MIN_LEARNING_RATE,
     )
     if ipex is not None and device.type == "xpu":
         model, optimizer = ipex.optimize(
             model,
             optimizer=optimizer,
             dtype=torch.float32,
+        )
+        scheduler = CosineAnnealingLR(
+            optimizer,
+            T_max=EPOCHS,
+            eta_min=MIN_LEARNING_RATE,
         )
 
     best_val_acc = 0.0
@@ -203,11 +216,14 @@ def main():
             device,
             epoch,
         )
+        current_lr = scheduler.get_last_lr()[0]
+        scheduler.step()
 
         print(
             f"Epoch {epoch:02d}/{EPOCHS} | "
             f"train loss {train_loss:.4f}, train acc {train_acc:.4f} | "
-            f"val loss {val_loss:.4f}, val acc {val_acc:.4f}"
+            f"val loss {val_loss:.4f}, val acc {val_acc:.4f} | "
+            f"lr {current_lr:.6f}"
         )
 
         if val_acc > best_val_acc:

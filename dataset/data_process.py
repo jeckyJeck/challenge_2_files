@@ -95,6 +95,7 @@ class ImageClassificationDataModule:
         self._raw_val_subset = None
         self._raw_test_subset = None
         self._train_augmentations = self._get_default_train_augmentations()
+        self._tensor_train_augmentations = self._get_default_tensor_train_augmentations()
 
         self._prepare_datasets()
 
@@ -107,8 +108,29 @@ class ImageClassificationDataModule:
 
     def _get_default_train_augmentations(self) -> List[Callable]:
         return [
+            transforms.RandomResizedCrop(
+                self.image_size,
+                scale=(0.75, 1.0),
+                ratio=(0.85, 1.15),
+            ),
             transforms.RandomHorizontalFlip(p=0.5),
-            transforms.RandomRotation(degrees=15),
+            transforms.RandomRotation(degrees=10),
+            transforms.ColorJitter(
+                brightness=0.15,
+                contrast=0.15,
+                saturation=0.15,
+                hue=0.03,
+            ),
+        ]
+
+    def _get_default_tensor_train_augmentations(self) -> List[Callable]:
+        return [
+            transforms.RandomErasing(
+                p=0.2,
+                scale=(0.02, 0.12),
+                ratio=(0.3, 3.3),
+                value="random",
+            ),
         ]
 
     def set_transforms(self, list_of_transforms: Sequence[Callable]) -> None:
@@ -116,8 +138,17 @@ class ImageClassificationDataModule:
         self._train_augmentations = list(list_of_transforms)
 
     def _get_transforms(self, augment: bool) -> transforms.Compose:
-        augmentation_steps = self._train_augmentations if augment else []
-        return transforms.Compose([*augmentation_steps, *self._get_base_transform_steps()])
+        if not augment:
+            return transforms.Compose(self._get_base_transform_steps())
+
+        return transforms.Compose(
+            [
+                *self._train_augmentations,
+                transforms.ToTensor(),
+                transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD),
+                *self._tensor_train_augmentations,
+            ]
+        )
 
     def _prepare_datasets(self) -> None:
         """Initializes the dataset and performs deterministic virtual stratified splits."""
