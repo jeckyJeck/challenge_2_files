@@ -1,0 +1,104 @@
+Using device: xpu
+Intel Arc GPU acceleration enabled through PyTorch XPU.
+Epoch 01/25 train [##############################]  250/250 loss 2.1331 acc 0.3329
+Epoch 01/25 val   [##############################]   63/63 loss 1.9512 acc 0.3927
+Epoch 01/25 | train loss 2.1331, train acc 0.3329 | val loss 1.9512, val acc 0.3927   och 02/25 train [##############################]  250/250 loss 1.6953 acc 0.4736
+Epoch 02/25 train [##############################]  250/250 loss 1.6953 acc 0.4736    och 02/25 | train loss 1.6953, train acc 0.4736 | val loss 1.7014, val acc 0.4868
+Epoch 02/25 val   [##############################]   63/63 loss 1.7014 acc 0.4868     och 03/25 val   [##############################]   63/63 loss 1.5596 acc 0.5200
+Epoch 02/25 | train loss 1.6953, train acc 0.4736 | val loss 1.7014, val acc 0.4868   och 04/25 train [##############################]  250/250 loss 1.3359 acc 0.5891
+Epoch 03/25 train [##############################]  250/250 loss 1.4831 acc 0.5394    och 04/25 | train loss 1.3359, train acc 0.5891 | val loss 2.1646, val acc 0.4783
+Epoch 03/25 val   [##############################]   63/63 loss 1.5596 acc 0.5200     och 05/25 val   [##############################]   63/63 loss 1.1921 acc 0.6262
+Epoch 03/25 | train loss 1.4831, train acc 0.5394 | val loss 1.5596, val acc 0.5200   och 06/25 train [####################----------]  172/250 loss 1.1548 acc 0.6453
+Epoch 01/25 | train loss 2.1331, train acc 0.3329 | val loss 1.9512, val acc 0.3927  
+Epoch 02/25 train [##############################]  250/250 loss 1.6953 acc 0.4736   
+Epoch 01/25 | train loss 2.1331, train acc 0.3329 | val loss 1.9512, val acc 0.3927     
+Epoch 02/25 train [##############################]  250/250 loss 1.6953 acc 0.4736      
+Epoch 01/25 | train loss 2.1331, train acc 0.3329 | val loss 1.9512, val acc 0.3927
+Epoch 02/25 train [##############################]  250/250 loss 1.6953 acc 0.4736
+Epoch 01/25 | train loss 2.1331, train acc 0.3329 | val loss 1.9512, val acc 0.3927
+Epoch 02/25 train [##############################]  250/250 loss 1.6953 acc 0.4736
+Epoch 02/25 val   [##############################]   63/63 loss 1.7014 acc 0.4868
+Epoch 02/25 | train loss 1.6953, train acc 0.4736 | val loss 1.7014, val acc 0.4868
+Epoch 03/25 train [##############################]  250/250 loss 1.4831 acc 0.5394
+Epoch 01/25 | train loss 2.1331, train acc 0.3329 | val loss 1.9512, val acc 0.3927
+Epoch 02/25 train [##############################]  250/250 loss 1.6953 acc 0.4736
+Epoch 02/25 val   [##############################]   63/63 loss 1.7014 acc 0.4868
+Epoch 02/25 | train loss 1.6953, train acc 0.4736 | val loss 1.7014, val acc 0.4868
+Epoch 01/25 | train loss 2.1331, train acc 0.3329 | val loss 1.9512, val acc 0.3927
+Epoch 02/25 train [##############################]  250/250 loss 1.6953 acc 0.4736
+Epoch 02/25 val   [##############################]   63/63 loss 1.7014 acc 0.4868
+Epoch 02/25 | train loss 1.6953, train acc 0.4736 | val loss 1.7014, val acc 0.4868
+Epoch 02/25 val   [##############################]   63/63 loss 1.7014 acc 0.4868
+Epoch 02/25 val   [##############################]   63/63 loss 1.7014 acc 0.4868
+Epoch 02/25 | train loss 1.6953, train acc 0.4736 | val loss 1.7014, val acc 0.4868
+Epoch 03/25 train [##############################]  250/250 loss 1.4831 acc 0.5394
+Epoch 03/25 val   [##############################]   63/63 loss 1.5596 acc 0.5200
+Epoch 03/25 | train loss 1.4831, train acc 0.5394 | val loss 1.5596, val acc 0.5200
+Epoch 04/25 train [##############################]  250/250 loss 1.3359 acc 0.5891
+Epoch 04/25 val   [##############################]   63/63 loss 2.1646 acc 0.4783
+Epoch 04/25 | train loss 1.3359, train acc 0.5891 | val loss 2.1646, val acc 0.4783
+Epoch 03/25 | train loss 1.4831, train acc 0.5394 | val loss 1.5596, val acc 0.5200
+Epoch 04/25 train [##############################]  250/250 loss 1.3359 acc 0.5891
+Epoch 04/25 val   [##############################]   63/63 loss 2.1646 acc 0.4783
+Epoch 04/25 | train loss 1.3359, train acc 0.5891 | val loss 2.1646, val acc 0.478Epoch 06/25 train [##############################]  250/250 loss 1.1470 acc 0.6474
+Epoch 06/25 val   [##############################]   63/63 loss 1.1314 acc 0.6587 
+Epoch 06/25 | train loss 1.1470, train acc 0.6474 | val loss 1.1314, val acc 0.6587
+Epoch 07/25 train [##############################]  250/250 loss 1.0713 acc 0.6709
+Epoch 07/25 val   [##############################]   63/63 loss 1.2928 acc 0.6098 
+Epoch 07/25 | train loss 1.0713, train acc 0.6709 | val loss 1.2928, val acc 0.6098
+Epoch 08/25 train [#####################---------]  183/250 loss 1.0271 acc 0.6907
+Epoch 08/25 train [##############################]  250/250 loss 1.0178 acc 0.6902Epoch 08/25 val   [##############################]   63/63 loss 1.0173 acc 0.7020
+Epoch 08/25 | train loss 1.0178, train acc 0.6902 | val loss 1.0173, val acc 0.7020
+Epoch 09/25 train [##############################]  250/250 loss 0.9519 acc 0.7147
+Epoch 09/25 val   [##############################]   63/63 loss 1.0731 acc 0.6795
+Epoch 09/25 | train loss 0.9519, train acc 0.7147 | val loss 1.0731, val acc 0.6795
+Epoch 10/25 train [##############################]  250/250 loss 0.9169 acc 0.7219
+Epoch 10/25 val   [##############################]   63/63 loss 1.4597 acc 0.5843
+Epoch 10/25 | train loss 0.9169, train acc 0.7219 | val loss 1.4597, val acc 0.5843
+Epoch 11/25 train [##############################]  250/250 loss 0.8849 acc 0.7272
+Epoch 11/25 val   [##############################]   63/63 loss 1.2367 acc 0.6530
+Epoch 11/25 | train loss 0.8849, train acc 0.7272 | val loss 1.2367, val acc 0.6530
+Epoch 12/25 train [##############################]  250/250 loss 0.8233 acc 0.7483
+Epoch 12/25 val   [##############################]   63/63 loss 0.8656 acc 0.7350
+Epoch 12/25 | train loss 0.8233, train acc 0.7483 | val loss 0.8656, val acc 0.7350
+Epoch 13/25 train [##############################]  250/250 loss 0.7952 acc 0.7607
+Epoch 13/25 val   [##############################]   63/63 loss 0.8041 acc 0.7555
+Epoch 13/25 | train loss 0.7952, train acc 0.7607 | val loss 0.8041, val acc 0.7555
+Epoch 14/25 train [##############################]  250/250 loss 0.7672 acc 0.7641
+Epoch 14/25 val   [##############################]   63/63 loss 1.0471 acc 0.6953
+Epoch 14/25 | train loss 0.7672, train acc 0.7641 | val loss 1.0471, val acc 0.6953
+Epoch 15/25 train [##############################]  250/250 loss 0.7439 acc 0.7713
+Epoch 15/25 val   [##############################]   63/63 loss 0.9003 acc 0.7420
+Epoch 15/25 | train loss 0.7439, train acc 0.7713 | val loss 0.9003, val acc 0.7420
+Epoch 16/25 train [##############################]  250/250 loss 0.7057 acc 0.7823
+Epoch 16/25 val   [##############################]   63/63 loss 0.8185 acc 0.7742
+Epoch 16/25 | train loss 0.7057, train acc 0.7823 | val loss 0.8185, val acc 0.7742
+Epoch 17/25 train [##############################]  250/250 loss 0.6775 acc 0.7932
+Epoch 17/25 val   [##############################]   63/63 loss 0.9506 acc 0.7405
+Epoch 17/25 | train loss 0.6775, train acc 0.7932 | val loss 0.9506, val acc 0.7405
+Epoch 18/25 train [##############################]  250/250 loss 0.6512 acc 0.7999
+Epoch 18/25 val   [##############################]   63/63 loss 0.7016 acc 0.7905
+Epoch 18/25 | train loss 0.6512, train acc 0.7999 | val loss 0.7016, val acc 0.7905
+Epoch 19/25 train [##############################]  250/250 loss 0.6335 acc 0.8049
+Epoch 19/25 val   [##############################]   63/63 loss 0.9237 acc 0.7332
+Epoch 19/25 | train loss 0.6335, train acc 0.8049 | val loss 0.9237, val acc 0.7332
+Epoch 20/25 train [##############################]  250/250 loss 0.6080 acc 0.8124
+Epoch 20/25 val   [##############################]   63/63 loss 0.8425 acc 0.7612
+Epoch 20/25 | train loss 0.6080, train acc 0.8124 | val loss 0.8425, val acc 0.7612
+Epoch 21/25 train [##############################]  250/250 loss 0.5984 acc 0.8151
+Epoch 21/25 val   [##############################]   63/63 loss 0.8453 acc 0.7510
+Epoch 21/25 | train loss 0.5984, train acc 0.8151 | val loss 0.8453, val acc 0.7510
+Epoch 22/25 train [##############################]  250/250 loss 0.5634 acc 0.8253
+Epoch 22/25 val   [##############################]   63/63 loss 0.7087 acc 0.8030
+Epoch 22/25 | train loss 0.5634, train acc 0.8253 | val loss 0.7087, val acc 0.8030
+Epoch 23/25 train [##############################]  250/250 loss 0.5444 acc 0.8271
+Epoch 23/25 val   [##############################]   63/63 loss 0.7436 acc 0.7837
+Epoch 23/25 | train loss 0.5444, train acc 0.8271 | val loss 0.7436, val acc 0.7837
+Epoch 24/25 train [##############################]  250/250 loss 0.5335 acc 0.8366
+Epoch 24/25 val   [##############################]   63/63 loss 0.6437 acc 0.8133
+Epoch 24/25 | train loss 0.5335, train acc 0.8366 | val loss 0.6437, val acc 0.8133
+Epoch 25/25 train [##############################]  250/250 loss 0.5073 acc 0.8430
+Epoch 25/25 val   [##############################]   63/63 loss 0.7303 acc 0.7977
+Epoch 25/25 | train loss 0.5073, train acc 0.8430 | val loss 0.7303, val acc 0.7977
+Saved best model to C:\Users\hnweb\Documents\university\iml\hackathon\submissions\my_team\weights.joblib
+Best validation accuracy: 0.8133
