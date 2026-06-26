@@ -1,0 +1,12 @@
+Hillel Nagid,Liran Sasson,Doron Mendes,Yakov Kahana
+325605384,324083245,324496744,211426515
+
+This v1 submission uses a convolutional neural network trained from random initialization for the 20-class image classification task. The model architecture is defined in model.py as ModelArchitecture and consists of four convolutional feature stages with channel widths 32, 64, 128, and 256. Each stage uses 3x3 convolutions, BatchNorm, ReLU activations, and max pooling. The classifier applies adaptive average pooling, flattening, dropout with probability 0.3, and a final linear layer that outputs logits for the 20 target classes.
+
+The training pipeline uses the provided training images only. The data is split into a deterministic stratified 80/20 train/validation split with seed 42. Images are resized to 224x224, converted to tensors, and normalized with ImageNet mean and standard deviation. The model is optimized with AdamW, learning rate 1e-3, weight decay 1e-4, batch size 64, and CrossEntropyLoss for 25 epochs. The training script saves the best validation checkpoint as weights.joblib after moving tensors to CPU.
+
+For robustness, v1 uses label-preserving train-time augmentations: random horizontal flip with probability 0.5 and random rotation up to 15 degrees. These manipulations were inserted only in the training transform, while validation used deterministic resize, tensor conversion, and normalization. The goal was to improve invariance to viewpoint and small orientation changes without changing the class label.
+
+The v1 run reached a best local validation accuracy of 0.8133 at epoch 24. The final epoch reached 0.7977 validation accuracy, so the saved checkpoint corresponds to the best validation model rather than the final epoch. The train/validation gap at the best checkpoint was small, suggesting that the model was not heavily overfitting on the clean validation split.
+
+This version did not yet include stronger robustness manipulations such as color jitter, lighting changes, random erasing, background changes, MixUp, CutMix, or adversarial-style transformations. As a result, v1 is expected to be a reasonable clean-image baseline, but its robustness to hidden color, lighting, and background manipulations may be limited compared with later versions.
