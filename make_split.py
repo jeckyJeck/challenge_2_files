@@ -16,7 +16,7 @@ subfolders (the thing you downloaded/unzipped). Examples:
 The script copies (never deletes) into dataset/train and dataset/validation,
 so it is safe to re-run.
 
-    python make_split.py --src train_set --val-frac 0.15 --seed 42
+    python make_split.py --src dataset/train_set --val-frac 0.2 --seed 42
 """
 from __future__ import annotations
 import argparse, random, shutil, sys
