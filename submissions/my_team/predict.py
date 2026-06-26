@@ -1,13 +1,10 @@
 import importlib
 from pathlib import Path
 
-from importlib import util as importlib_util #this may vary depending on your Python version (Yakov)
-
 import joblib
 import torch
 
 from base_model import BaseModel
-from model import ModelArchitecture
 
 
 def load_model_architecture():
@@ -18,12 +15,12 @@ def load_model_architecture():
     current_dir = Path(__file__).resolve().parent
     model_path = current_dir / "model.py"
 
-    spec = importlib_util.spec_from_file_location("student_model", model_path)
+    spec = importlib.util.spec_from_file_location("student_model", model_path)
 
     if spec is None or spec.loader is None:
         raise ImportError(f"Could not import model.py from {model_path}")
 
-    module = importlib_util.module_from_spec(spec)
+    module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
 
     if not hasattr(module, "ModelArchitecture"):

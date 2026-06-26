@@ -6,14 +6,16 @@ import joblib
 import torch
 import torch.nn as nn
 from torch.optim import AdamW
+from torch.utils.data import DataLoader
+from torchvision import transforms
+from torchvision.datasets import ImageFolder
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+# from dataset.data_process import ImageClassificationDataModule  # noqa: E402
 from model import ModelArchitecture  # noqa: E402
-
-from dataset.data_process import ImageClassificationDataModule  # noqa: E402
 
 OUTPUT = Path("weights.joblib")
 
@@ -137,6 +139,52 @@ def evaluate(model, loader, criterion, device, epoch):
     return total_loss / total, correct / total
 
 
+def get_train_loader():
+    train_dir = PROJECT_ROOT / "dataset" / "train"
+    train_transforms = transforms.Compose(
+        [
+            transforms.Resize(IMAGE_SIZE),
+            transforms.RandomCrop(IMAGE_SIZE, padding=4, padding_mode="reflect"),
+            transforms.RandomHorizontalFlip(),
+            transforms.ColorJitter(
+                brightness=0.1,
+                contrast=0.1,
+                saturation=0.1,
+                hue=0.1,
+            ),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
+    train_dataset = ImageFolder(train_dir, train_transforms)
+    return DataLoader(
+        train_dataset,
+        batch_size=BATCH_SIZE,
+        shuffle=True,
+        num_workers=2,
+        pin_memory=torch.cuda.is_available(),
+    )
+
+
+def get_val_loader():
+    val_dir = PROJECT_ROOT / "dataset" / "validation"
+    val_transforms = transforms.Compose(
+        [
+            transforms.Resize(IMAGE_SIZE),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
+    val_dataset = ImageFolder(val_dir, val_transforms)
+    return DataLoader(
+        val_dataset,
+        batch_size=BATCH_SIZE,
+        shuffle=False,
+        num_workers=2,
+        pin_memory=torch.cuda.is_available(),
+    )
+
+
 def main():
     """
     Full training pipeline.
@@ -155,19 +203,22 @@ def main():
     elif ipex is None:
         print("IPEX is not installed; falling back to the best native PyTorch device.")
 
-    data_module = ImageClassificationDataModule(
-        image_size=IMAGE_SIZE,
-        batch_size=BATCH_SIZE,
-        val_split=0.2,
-        test_split=0.0,
-        num_workers=0,
-        seed=42,
-    )
+    # data_module = ImageClassificationDataModule(
+    #     image_size=IMAGE_SIZE,
+    #     batch_size=BATCH_SIZE,
+    #     val_split=0.2,
+    #     test_split=0.0,
+    #     num_workers=0,
+    #     seed=42,
+    # )
 
-    train_loader = data_module.get_train_loader(augment=True)
-    val_loader = data_module.get_val_loader()
+    # train_loader = data_module.get_train_loader(augment=True)
+    # val_loader = data_module.get_val_loader()
 
-    model = ModelArchitecture(num_classes=data_module.num_classes).to(
+    train_loader = get_train_loader()
+    val_loader = get_val_loader()
+
+    model = ModelArchitecture(num_classes=20).to(
         device=device,
         memory_format=torch.channels_last,
     )
